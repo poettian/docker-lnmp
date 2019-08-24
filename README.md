@@ -1,2 +1,3 @@
-# docker-php-fpm
-php docker images
+# docker-lnmp
+
+Use docker to build php development enviroment.
