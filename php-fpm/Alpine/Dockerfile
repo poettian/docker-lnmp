@@ -71,12 +71,3 @@ RUN set -eux; \
     && pecl install redis-5.0.2 \
     && docker-php-ext-enable igbinary redis memcached mongodb xdebug msgpack
 
-# 安装ice扩展
-RUN wget https://github.com/ice/framework/archive/1.4.1.tar.gz \
-    && tar -zxf 1.4.1.tar.gz \
-    && cd framework-1.4.1 \
-    && sh ./install \
-    && echo 'extension=ice.so' > /usr/local/etc/php/conf.d/docker-php-ext-ice.ini \
-    && cd $HOMEDIR \
-    && rm -r framework-1.4.1 \
-    && rm 1.4.1.tar.gz

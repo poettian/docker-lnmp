@@ -1,0 +1,34 @@
+FROM centos:centos7.5.1804
+
+MAINTAINER Poettian <poettian@gmail.com>
+
+RUN yum install -y epel-release \
+    yum-utils \
+    && yum install -y http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+    && yum-config-manager --enable remi-php72 \
+    && yum install -y php-cli \
+    php-fpm \
+    php-bcmath \
+    php-xml \
+    php-gd \
+    php-pecl-igbinary \
+    php-imap \
+    php-intl \
+    php-ldap \
+    php-mbstring \
+    php-pecl-memcached \
+    php-pecl-mongodb \
+    php-pecl-msgpack \
+    php-mysqlnd \
+    php-pdo \
+    php-pgsql \
+    php-pecl-redis \
+    php-soap \
+    php-opcache \
+    php-pecl-xdebug \
+    php-process \
+    php-sodium \
+    php-tidy \
+    php-pecl-zip \
+    && yum clean all \
+    && rm -rf /var/cache/yum
