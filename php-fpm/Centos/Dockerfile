@@ -32,3 +32,17 @@ RUN yum install -y epel-release \
     php-pecl-zip \
     && yum clean all \
     && rm -rf /var/cache/yum
+
+COPY docker-php-entrypoint /usr/local/bin/
+
+RUN set -eux; \
+    [ ! -d /run/php-fpm ]; \
+    mkdir /run/php-fpm; \
+    chmod u+x /usr/local/bin/docker-php-entrypoint; \
+    sed -i 's/daemonize = yes/daemonize = no/' /etc/php-fpm.conf
+
+ENTRYPOINT ["docker-php-entrypoint"]
+
+EXPOSE 9000
+
+CMD ["php-fpm"]
