@@ -39,7 +39,15 @@ RUN set -eux; \
     [ ! -d /run/php-fpm ]; \
     mkdir /run/php-fpm; \
     chmod u+x /usr/local/bin/docker-php-entrypoint; \
-    sed -i 's/daemonize = yes/daemonize = no/' /etc/php-fpm.conf
+    cd /etc/; \
+    sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' php-fpm.conf; \
+    { \
+        echo '[global]'; \
+        echo 'daemonize = no'; \
+        echo; \
+        echo '[www]'; \
+        echo 'listen = 9000'; \
+    } | tee php-fpm.d/zz-docker.conf
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
