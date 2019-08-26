@@ -41,6 +41,7 @@ RUN set -eux; \
     chmod u+x /usr/local/bin/docker-php-entrypoint; \
     cd /etc/; \
     sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' php-fpm.conf; \
+    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' php-fpm.d/www.conf; \
     { \
         echo '[global]'; \
         echo 'daemonize = no'; \
