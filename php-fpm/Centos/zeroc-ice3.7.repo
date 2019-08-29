@@ -1,0 +1,13 @@
+[zeroc-ice3.7]
+name=ZeroC Ice 3.7
+baseurl=https://zeroc.com/download/Ice/3.7/el7/$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://zeroc.com/download/GPG-KEY-zeroc-release-B6391CB2CFBA643D
+
+[zeroc-ice3.7-src]
+name=ZeroC Ice 3.7 (SRPMS)
+baseurl=https://zeroc.com/download/Ice/3.7/el7/SRPMS
+enabled=1
+gpgcheck=1
+gpgkey=https://zeroc.com/download/GPG-KEY-zeroc-release-B6391CB2CFBA643D
