@@ -61,6 +61,7 @@ RUN set -eux; \
     mv zeroc-ice3.7.repo /etc/yum.repos.d; \
     cd /usr/local/src; \
     mv /root/v3.7.0.zip /usr/local/src; \
+    yum install -y unzip; \
     unzip v3.7.0.zip
 
 RUN yum install -y bzip2-devel \
@@ -70,28 +71,35 @@ RUN yum install -y bzip2-devel \
     mcpp-devel \
     openssl-devel \
     centos-release-scl \
-    devtoolset-7
+    && yum install -y devtoolset-7
 
-RUN set -eux; \
-    source scl_source enable devtoolset-7; \
-    cd /usr/local/src/ice-3.7.0/cpp; \
-    make V=1 -j8 srcs; \
-    make install; \
-    echo '/opt/Ice-3.7.0/lib64/' > /etc/ld.so.conf.d/ice.conf; \
-    ldconfig; \
-    echo 'export ICE_HOME=/opt/Ice-3.7.0/' > /etc/profile.d/ice.sh; \
-    echo 'export PATH=$ICE_HOME/bin::$PATH' > /etc/profile.d/ice.sh; \
-    echo 'export PATH' > /etc/profile.d/ice.sh; \
-    source /etc/profile.d/ice.sh; \
-    cd /usr/local/src/ice-3.7.0/php; \
-    make; \
-    cp lib/ice.so /usr/lib64/php/modules; \
-    echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
-    cp  -R lib/* /usr/share/php; \
-    cd /root/; \
-    rm -rf GPG-KEY-zeroc-release-B6391CB2CFBA643D \
-    /usr/local/src/v3.7.0.zip \
-    /usr/local/src/ice-3.7.0
+
+COPY scl_enable /usr/local/bin/scl_enable
+
+RUN gcc --version \
+    && sh /usr/local/bin/scl_enable \
+    && gcc --version
+
+# RUN set -eux; \
+#     cd /usr/local/src/ice-3.7.0/cpp; \
+#     make V=1 -j8 srcs; \
+#     make install; \
+# 
+# RUN set -eux; \
+#     echo '/opt/Ice-3.7.0/lib64/' > /etc/ld.so.conf.d/ice.conf; \
+#     ldconfig; \
+#     export ICE_HOME=/opt/Ice-3.7.0; \
+#     export PATH=$ICE_HOME/bin:$PATH; \
+#     export PATH; \
+#     cd /usr/local/src/ice-3.7.0/php; \
+#     make; \
+#     cp lib/ice.so /usr/lib64/php/modules; \
+#     echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
+#     cp -R lib/* /usr/share/php; \
+#     cd /root/; \
+#     rm -rf GPG-KEY-zeroc-release-B6391CB2CFBA643D \
+#     /usr/local/src/v3.7.0.zip \
+#     /usr/local/src/ice-3.7.0
         
 
 EXPOSE 9000
