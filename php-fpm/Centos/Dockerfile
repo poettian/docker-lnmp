@@ -2,11 +2,12 @@ FROM centos:centos7.5.1804
 
 MAINTAINER Poettian <poettian@gmail.com>
 
-RUN yum install -y epel-release \
-    yum-utils \
-    && yum install -y http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
-    && yum-config-manager --enable remi-php72 \
-    && yum install -y php-cli \
+RUN set -eux; \
+    yum install -y epel-release \
+    yum-utils; \
+    yum install -y http://rpms.remirepo.net/enterprise/remi-release-7.rpm; \
+    yum-config-manager --enable remi-php72; \
+    yum install -y php-cli \
     php-fpm \
     php-bcmath \
     php-xml \
@@ -30,9 +31,9 @@ RUN yum install -y epel-release \
     php-sodium \
     php-tidy \
     php-pecl-zip \
-    php-devel \
-    && yum clean all \
-    && rm -rf /var/cache/yum
+    php-devel; \
+    yum clean all; \
+    rm -rf /var/cache/yum
 
 COPY docker-php-entrypoint /usr/local/bin/
 
@@ -64,42 +65,40 @@ RUN set -eux; \
     yum install -y unzip; \
     unzip v3.7.0.zip
 
-RUN yum install -y bzip2-devel \
+RUN set -eux; \
+    yum install -y bzip2-devel \
     bzip2 \
     expat-devel \
     lmdb-devel \
     mcpp-devel \
     openssl-devel \
-    centos-release-scl \
-    && yum install -y devtoolset-7
+    centos-release-scl; \
+    yum install -y devtoolset-7; \
+    yum clean all; \
+    rm -rf /var/cache/yum
 
+RUN source scl_source enable devtoolset-7; \
+    set -eux; \
+    cd /usr/local/src/ice-3.7.0/cpp; \
+    make V=1 -j8 srcs; \
+    make install
 
-COPY scl_enable /usr/local/bin/scl_enable
-
-RUN gcc --version \
-    && sh /usr/local/bin/scl_enable \
-    && gcc --version
-
-# RUN set -eux; \
-#     cd /usr/local/src/ice-3.7.0/cpp; \
-#     make V=1 -j8 srcs; \
-#     make install; \
-# 
-# RUN set -eux; \
-#     echo '/opt/Ice-3.7.0/lib64/' > /etc/ld.so.conf.d/ice.conf; \
-#     ldconfig; \
-#     export ICE_HOME=/opt/Ice-3.7.0; \
-#     export PATH=$ICE_HOME/bin:$PATH; \
-#     export PATH; \
-#     cd /usr/local/src/ice-3.7.0/php; \
-#     make; \
-#     cp lib/ice.so /usr/lib64/php/modules; \
-#     echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
-#     cp -R lib/* /usr/share/php; \
-#     cd /root/; \
-#     rm -rf GPG-KEY-zeroc-release-B6391CB2CFBA643D \
-#     /usr/local/src/v3.7.0.zip \
-#     /usr/local/src/ice-3.7.0
+RUN source scl_source enable devtoolset-7; \
+    set -eux; \
+    echo '/opt/Ice-3.7.0/lib64/' > /etc/ld.so.conf.d/ice.conf; \
+    ldconfig; \
+    export ICE_HOME=/opt/Ice-3.7.0; \
+    export PATH=$ICE_HOME/bin:$PATH; \
+    export PATH; \
+    cd /usr/local/src/ice-3.7.0/php; \
+    make; \
+    cp lib/ice.so /usr/lib64/php/modules; \
+    echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
+    cp -R lib/* /usr/share/php; \
+    cd /root/; \
+    rm -rf GPG-KEY-zeroc-release-B6391CB2CFBA643D \
+    /usr/local/src/v3.7.0.zip \
+    /usr/local/src/ice-3.7.0
         
 
 EXPOSE 9000
