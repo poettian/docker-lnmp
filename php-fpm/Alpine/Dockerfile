@@ -2,72 +2,72 @@ FROM php:7.2-fpm-alpine
 
 MAINTAINER Poettian <poettian@gmail.com>
 
-ENV HOMEDIR /root/
+RUN set -xe; \
+    apk update && \
+    pecl channel-update pecl.php.net
 
-ENV PHPEX_DEPS $PHPIZE_DEPS \
-        freetype-dev \
-        libpng-dev \
-        libjpeg-turbo-dev \
-        libwebp-dev \
-        zlib-dev \
-        libxpm-dev \
-        imap-dev \
-        openldap-dev \
-        tidyhtml-dev \
-        libxslt-dev \
-        krb5-dev \
-        gettext-dev \
-        icu-dev \
-        postgresql-dev \
-        libzip-dev \
-        libmemcached-dev
-
-WORKDIR $HOMEDIR
-
-# 安装基础包
-RUN apk update && apk add --no-cache --virtual .phpex-deps $PHPEX_DEPS
-
-# 编译安装源码包自带的扩展
-RUN set -eux; \
+# Install the PHP gd extention
+RUN apk add --no-cache freetype-dev \
+    libpng-dev \
+    libjpeg-turbo-dev && \
     docker-php-ext-configure gd \
+        --with-freetype-dir=/usr/include/freetype2 \
         --with-png-dir=/usr/include \
-        --with-jpeg-dir=/usr/include/ \
-        --with-xpm-dir=/usr/include \
-        --with-webp-dir=/usr/include \
-        --with-freetype-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install -j$(nproc) imap \
-        bcmath \
-        exif \
-        gettext \
-        intl \
-        ldap \
-        mysqli \
-        pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        pcntl \
-        shmop \
-        soap \
-        sockets \
-        sysvmsg \
-        sysvsem \
-        sysvshm \
-        tidy \
-        wddx \
-        xsl \
-        opcache \
-    && docker-php-ext-configure zip --with-libzip \
-    && docker-php-ext-install -j$(nproc) zip
+        --with-jpeg-dir=/usr/include \
+    && docker-php-ext-install gd
 
-# 通过pecl安装的扩展
-RUN set -eux; \
-    pecl install igbinary-3.0.1 \
-    && pecl install memcached-3.1.3 \
-    && pecl install mongodb-1.5.5 \
-    && pecl install msgpack-2.0.3 \
-    && pecl install xdebug-2.7.2 \
-    && pecl install redis-5.0.2 \
-    && docker-php-ext-enable igbinary redis memcached mongodb xdebug msgpack
+# Install the PHP pdo_mysql extention
+RUN docker-php-ext-install pdo_mysql
 
+# Install pcntl
+RUN docker-php-ext-install pcntl
+
+# Install bcmath
+RUN docker-php-ext-install bcmath
+
+# Install opcache
+RUN docker-php-ext-install opcache
+COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# Install mysqli
+RUN docker-php-ext-install mysqli
+
+# Install tools
+ENV PHPIZE_DEPS \
+        autoconf \
+        dpkg-dev dpkg \
+        file \
+        g++ \
+        gcc \
+        libc-dev \
+        make \
+        pkgconf \
+        re2c
+RUN apk add --no-cache --virtual .poettian-phpize-deps $PHPIZE_DEPS
+
+# Install xdebug
+RUN pecl install xdebug && \
+    docker-php-ext-enable xdebug
+
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+RUN sed -i "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/" /usr/local/etc/php/conf.d/xdebug.ini && \
+    sed -i "s/xdebug.remote_enable=0/xdebug.remote_enable=1/" /usr/local/etc/php/conf.d/xdebug.ini && \
+    sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /usr/local/etc/php/conf.d/xdebug.ini
+
+# Install redis
+RUN printf "\n" | pecl install -o -f redis \
+    &&  rm -rf /tmp/pear \
+    &&  docker-php-ext-enable redis
+
+# Install swoole
+RUN apk add --no-cache libstdc++ && \
+    pecl install swoole && \
+    docker-php-ext-enable swoole
+
+# Install mongodb
+RUN pecl install mongodb && \
+    docker-php-ext-enable mongodb
+
+# Clear
+RUN apk del --no-network .poettian-phpize-deps
