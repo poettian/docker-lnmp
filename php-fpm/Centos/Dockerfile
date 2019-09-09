@@ -1,39 +1,23 @@
-FROM centos:centos7.5.1804
+FROM centos:7.6.1810
 
 MAINTAINER Poettian <poettian@gmail.com>
 
-RUN set -eux; \
-    yum install -y epel-release \
-    yum-utils; \
-    yum install -y http://rpms.remirepo.net/enterprise/remi-release-7.rpm; \
-    yum-config-manager --enable remi-php72; \
+RUN yum install -y epel-release \
+    yum-utils \
+    http://rpms.remirepo.net/enterprise/remi-release-7.rpm && \
+    yum-config-manager --enable remi-php72 && \
     yum install -y php-cli \
     php-fpm \
     php-bcmath \
     php-xml \
     php-gd \
-    php-pecl-igbinary \
-    php-imap \
-    php-intl \
-    php-ldap \
     php-mbstring \
-    php-pecl-memcached \
     php-pecl-mongodb \
-    php-pecl-msgpack \
     php-mysqlnd \
     php-pdo \
-    php-pgsql \
     php-pecl-redis \
-    php-soap \
     php-opcache \
-    php-pecl-xdebug \
-    php-process \
-    php-sodium \
-    php-tidy \
-    php-pecl-zip \
-    php-devel; \
-    yum clean all; \
-    rm -rf /var/cache/yum
+    php-devel
 
 COPY docker-php-entrypoint /usr/local/bin/
 
@@ -54,28 +38,27 @@ RUN set -eux; \
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
-COPY GPG-KEY-zeroc-release-B6391CB2CFBA643D v3.7.0.zip zeroc-ice3.7.repo /root/
-
 RUN set -eux; \
-    cd /root/; \
+    yum install -y wget; \
+    wget https://zeroc.com/download/GPG-KEY-zeroc-release-B6391CB2CFBA643D; \
     rpm --import GPG-KEY-zeroc-release-B6391CB2CFBA643D; \
-    mv zeroc-ice3.7.repo /etc/yum.repos.d; \
+    cd /etc/yum.repos.d; \
+    wget https://zeroc.com/download/Ice/3.7/el7/zeroc-ice3.7.repo; \
     cd /usr/local/src; \
-    mv /root/v3.7.0.zip /usr/local/src; \
+    wget https://github.com/zeroc-ice/ice/archive/v3.7.0.zip; \
     yum install -y unzip; \
     unzip v3.7.0.zip
 
-RUN set -eux; \
-    yum install -y bzip2-devel \
+
+
+RUN yum install -y bzip2-devel \
     bzip2 \
     expat-devel \
     lmdb-devel \
     mcpp-devel \
     openssl-devel \
-    centos-release-scl; \
-    yum install -y devtoolset-7; \
-    yum clean all; \
-    rm -rf /var/cache/yum
+    centos-release-scl && \
+    yum install -y devtoolset-7
 
 RUN source scl_source enable devtoolset-7; \
     set -eux; \
@@ -94,12 +77,12 @@ RUN source scl_source enable devtoolset-7; \
     make; \
     cp lib/ice.so /usr/lib64/php/modules; \
     echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
-    cp -R lib/* /usr/share/php; \
-    cd /root/; \
-    rm -rf GPG-KEY-zeroc-release-B6391CB2CFBA643D \
-    /usr/local/src/v3.7.0.zip \
-    /usr/local/src/ice-3.7.0
-        
+    cp -R lib/* /usr/share/php
+
+RUN rm -rf /usr/local/src/v3.7.0.zip \
+    /usr/local/src/ice-3.7.0 && \
+    yum clean all && \
+    rm -rf /var/cache/yum
 
 EXPOSE 9000
 
