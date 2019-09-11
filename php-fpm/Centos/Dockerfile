@@ -16,6 +16,7 @@ RUN yum install -y epel-release \
     php-mysqlnd \
     php-pdo \
     php-pecl-redis \
+    php-pecl-mcrypt \
     php-opcache \
     php-devel
 
