@@ -28,8 +28,9 @@ RUN yum install -y epel-release \
     php-pecl-igbinary \
     php-pecl-xdebug \
     php-pecl-swoole4 \
-    php-opcache \
-    php-devel
+    php-opcache && \
+    yum clean all && \
+    rm -rf /var/cache/yum
 
 COPY docker-php-entrypoint /usr/local/bin/
 
@@ -50,36 +51,31 @@ RUN set -eux; \
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
-RUN set -eux; \
-    yum install -y wget; \
+ENV ICE_DEPS bzip2-devel \
+    bzip2 \
+    expat-devel \
+    lmdb-devel \
+    mcpp-devel \
+    openssl-devel \
+    centos-release-scl
+
+RUN yum install -y wget \
+    unzip \
+    php-devel && \
     wget https://zeroc.com/download/GPG-KEY-zeroc-release-B6391CB2CFBA643D; \
     rpm --import GPG-KEY-zeroc-release-B6391CB2CFBA643D; \
     cd /etc/yum.repos.d; \
     wget https://zeroc.com/download/Ice/3.7/el7/zeroc-ice3.7.repo; \
     cd /usr/local/src; \
     wget https://github.com/zeroc-ice/ice/archive/v3.7.0.zip; \
-    yum install -y unzip; \
-    unzip v3.7.0.zip
-
-
-
-RUN yum install -y bzip2-devel \
-    bzip2 \
-    expat-devel \
-    lmdb-devel \
-    mcpp-devel \
-    openssl-devel \
-    centos-release-scl && \
-    yum install -y devtoolset-7
-
-RUN source scl_source enable devtoolset-7; \
+    unzip v3.7.0.zip; \
+    yum install -y $ICE_DEPS && \
+    yum install -y devtoolset-7; \
+    source scl_source enable devtoolset-7; \
     set -eux; \
     cd /usr/local/src/ice-3.7.0/cpp; \
     make V=1 -j8 srcs; \
-    make install
-
-RUN source scl_source enable devtoolset-7; \
-    set -eux; \
+    make install; \
     echo '/opt/Ice-3.7.0/lib64/' > /etc/ld.so.conf.d/ice.conf; \
     ldconfig; \
     export ICE_HOME=/opt/Ice-3.7.0; \
@@ -89,12 +85,16 @@ RUN source scl_source enable devtoolset-7; \
     make; \
     cp lib/ice.so /usr/lib64/php/modules; \
     echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
-    cp -R lib/* /usr/share/php
-
-RUN rm -rf /usr/local/src/v3.7.0.zip \
-    /usr/local/src/ice-3.7.0 && \
+    cp -R lib/* /usr/share/php; \
+    yum erase -y $ICE_DEPS \
+    devtoolset-7\* \
+    wget \
+    unzip \
+    php-devel; \
     yum clean all && \
-    rm -rf /var/cache/yum
+    rm -rf /var/cache/yum \
+    /usr/local/src/ice-3.7.0 \
+    v3.7.0.zip
 
 EXPOSE 9000
 
