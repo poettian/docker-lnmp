@@ -12,11 +12,22 @@ RUN yum install -y epel-release \
     php-xml \
     php-gd \
     php-mbstring \
-    php-pecl-mongodb \
+    php-imap \
+    php-intl \
+    php-ldap \
     php-mysqlnd \
     php-pdo \
+    php-soap \
+    php-process \
+    php-sodium \
+    php-tidy \
     php-pecl-redis \
+    php-pecl-mongodb \
+    php-pecl-msgpack \
     php-pecl-mcrypt \
+    php-pecl-igbinary \
+    php-pecl-xdebug \
+    php-pecl-swoole4 \
     php-opcache \
     php-devel
 
