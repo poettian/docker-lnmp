@@ -28,7 +28,7 @@ RUN yum install -y epel-release \
     php-pecl-igbinary \
     php-pecl-xdebug \
     php-pecl-swoole4 \
-    php-opcache && \
+    php-opcache \
     python36 && \
     pip3 install supervisor && \
     yum clean all && \
