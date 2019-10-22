@@ -7,7 +7,7 @@ if [ "${1#-}" != "$1" ]; then
 fi
 
 if [ "$1" == "php-fpm" ]; then
-    /usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf
+    /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 fi
 
 exec "$@"
