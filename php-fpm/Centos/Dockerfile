@@ -29,27 +29,10 @@ RUN yum install -y epel-release \
     php-pecl-xdebug \
     php-pecl-swoole4 \
     php-opcache && \
+    python36 && \
+    pip3 install supervisor && \
     yum clean all && \
     rm -rf /var/cache/yum
-
-COPY docker-php-entrypoint /usr/local/bin/
-
-RUN set -eux; \
-    [ ! -d /run/php-fpm ]; \
-    mkdir /run/php-fpm; \
-    chmod u+x /usr/local/bin/docker-php-entrypoint; \
-    cd /etc/; \
-    sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' php-fpm.conf; \
-    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' php-fpm.d/www.conf; \
-    { \
-        echo '[global]'; \
-        echo 'daemonize = no'; \
-        echo; \
-        echo '[www]'; \
-        echo 'listen = 9000'; \
-    } | tee php-fpm.d/zz-docker.conf
-
-ENTRYPOINT ["docker-php-entrypoint"]
 
 ENV ICE_DEPS bzip2-devel \
     bzip2 \
@@ -95,6 +78,25 @@ RUN yum install -y wget \
     rm -rf /var/cache/yum \
     /usr/local/src/ice-3.7.0 \
     v3.7.0.zip
+
+COPY docker-php-entrypoint /usr/local/bin/
+
+RUN set -eux; \
+    [ ! -d /run/php-fpm ]; \
+    mkdir /run/php-fpm; \
+    chmod u+x /usr/local/bin/docker-php-entrypoint; \
+    cd /etc/; \
+    sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' php-fpm.conf; \
+    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' php-fpm.d/www.conf; \
+    { \
+        echo '[global]'; \
+        echo 'daemonize = no'; \
+        echo; \
+        echo '[www]'; \
+        echo 'listen = 9000'; \
+    } | tee php-fpm.d/zz-docker.conf
+
+ENTRYPOINT ["docker-php-entrypoint"]
 
 EXPOSE 9000
 
