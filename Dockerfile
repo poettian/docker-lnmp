@@ -1,4 +1,4 @@
-FROM centos:7.6.1810
+FROM centos:centos8.1.1911
 
 MAINTAINER Poettian <poettian@gmail.com>
 
@@ -21,7 +21,7 @@ RUN yum install -y epel-release \
     php-process \
     php-sodium \
     php-tidy \
-    php-pecl-redis \
+    php-pecl-redis5 \
     php-pecl-mongodb \
     php-pecl-msgpack \
     php-pecl-mcrypt \
@@ -29,55 +29,39 @@ RUN yum install -y epel-release \
     php-pecl-xdebug \
     php-pecl-swoole4 \
     php-opcache \
-    python36 && \
-    pip3 install supervisor && \
     yum clean all && \
     rm -rf /var/cache/yum
 
 ENV ICE_DEPS bzip2-devel \
-    bzip2 \
     expat-devel \
     lmdb-devel \
     mcpp-devel \
-    openssl-devel \
-    centos-release-scl
+    openssl-devel
 
-RUN yum install -y wget \
+RUN set -eux; \
+    yum install -y $ICE_DEPS \
+    wget \
     unzip \
-    php-devel && \
-    wget https://zeroc.com/download/GPG-KEY-zeroc-release-B6391CB2CFBA643D; \
-    rpm --import GPG-KEY-zeroc-release-B6391CB2CFBA643D; \
-    cd /etc/yum.repos.d; \
-    wget https://zeroc.com/download/Ice/3.7/el7/zeroc-ice3.7.repo; \
+    php-devel; \
     cd /usr/local/src; \
     wget https://github.com/zeroc-ice/ice/archive/v3.7.0.zip; \
     unzip v3.7.0.zip; \
-    yum install -y $ICE_DEPS && \
-    yum install -y devtoolset-7; \
-    source scl_source enable devtoolset-7; \
-    set -eux; \
     cd /usr/local/src/ice-3.7.0/cpp; \
-    make V=1 -j8 srcs; \
+    make srcs; \
     make install; \
-    echo '/opt/Ice-3.7.0/lib64/' > /etc/ld.so.conf.d/ice.conf; \
-    ldconfig; \
-    export ICE_HOME=/opt/Ice-3.7.0; \
-    export PATH=$ICE_HOME/bin:$PATH; \
-    export PATH; \
     cd /usr/local/src/ice-3.7.0/php; \
     make; \
     cp lib/ice.so /usr/lib64/php/modules; \
-    echo 'extension=ice.so' > /etc/php.d/10-ice.ini; \
+    echo 'extension=ice.so' > /etc/php.d/50-ice.ini; \
     cp -R lib/* /usr/share/php; \
     yum erase -y $ICE_DEPS \
-    devtoolset-7\* \
     wget \
     unzip \
     php-devel; \
     yum clean all && \
     rm -rf /var/cache/yum \
     /usr/local/src/ice-3.7.0 \
-    v3.7.0.zip
+    /usr/local/src/v3.7.0.zip
 
 COPY docker-php-entrypoint /usr/local/bin/
 
