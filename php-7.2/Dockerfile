@@ -64,7 +64,8 @@ RUN set -eux; \
     dnf clean all && \
     rm -rf /var/cache/dnf \
     /usr/local/src/ice-3.7.2 \
-    /usr/local/src/v3.7.2.zip
+    /usr/local/src/v3.7.2.zip \
+    /opt/Ice-3.7.2/bin/*
 
 COPY docker-php-entrypoint /usr/local/bin/
 
