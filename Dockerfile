@@ -2,11 +2,12 @@ FROM centos:centos8.1.1911
 
 MAINTAINER Poettian <poettian@gmail.com>
 
-RUN yum install -y epel-release \
-    yum-utils \
-    http://rpms.remirepo.net/enterprise/remi-release-7.rpm && \
-    yum-config-manager --enable remi-php72 && \
-    yum install -y php-cli \
+RUN dnf install -y dnf-utils \
+    http://rpms.remirepo.net/enterprise/remi-release-8.rpm && \
+    dnf -y module reset php && \
+    dnf -y module enable php:remi-7.2
+
+RUN dnf install -y php-cli \
     php-fpm \
     php-bcmath \
     php-xml \
@@ -28,40 +29,40 @@ RUN yum install -y epel-release \
     php-pecl-igbinary \
     php-pecl-xdebug \
     php-pecl-swoole4 \
-    php-opcache \
-    yum clean all && \
-    rm -rf /var/cache/yum
+    php-opcache && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 ENV ICE_DEPS bzip2-devel \
     expat-devel \
     lmdb-devel \
     mcpp-devel \
-    openssl-devel
+    openssl-devel \
+    php-devel \
+    make \
+    wget \
+    unzip
 
 RUN set -eux; \
-    yum install -y $ICE_DEPS \
-    wget \
-    unzip \
-    php-devel; \
+    dnf install -y https://zeroc.com/download/ice/3.7/el8/ice-repo-3.7.el8.noarch.rpm; \
+    dnf config-manager --set-enabled PowerTools; \
+    dnf install -y $ICE_DEPS; \
     cd /usr/local/src; \
-    wget https://github.com/zeroc-ice/ice/archive/v3.7.0.zip; \
-    unzip v3.7.0.zip; \
-    cd /usr/local/src/ice-3.7.0/cpp; \
+    wget https://github.com/zeroc-ice/ice/archive/v3.7.2.zip; \
+    unzip v3.7.2.zip; \
+    cd /usr/local/src/ice-3.7.2/cpp; \
     make srcs; \
     make install; \
-    cd /usr/local/src/ice-3.7.0/php; \
+    cd /usr/local/src/ice-3.7.2/php; \
     make; \
     cp lib/ice.so /usr/lib64/php/modules; \
     echo 'extension=ice.so' > /etc/php.d/50-ice.ini; \
     cp -R lib/* /usr/share/php; \
-    yum erase -y $ICE_DEPS \
-    wget \
-    unzip \
-    php-devel; \
-    yum clean all && \
-    rm -rf /var/cache/yum \
-    /usr/local/src/ice-3.7.0 \
-    /usr/local/src/v3.7.0.zip
+    dnf remove -y $ICE_DEPS; \
+    dnf clean all && \
+    rm -rf /var/cache/dnf \
+    /usr/local/src/ice-3.7.2 \
+    /usr/local/src/v3.7.2.zip
 
 COPY docker-php-entrypoint /usr/local/bin/
 
