@@ -55,6 +55,8 @@ RUN set -eux; \
     make install; \
     echo '/opt/Ice-3.7.2/lib64/' > /etc/ld.so.conf.d/ice.conf; \
     ldconfig; \
+    export ICE_HOME=/opt/Ice-3.7.2; \
+    export PATH=$ICE_HOME/bin:$PATH; \
     cd /usr/local/src/ice-3.7.2/php; \
     make; \
     cp lib/ice.so /usr/lib64/php/modules; \
