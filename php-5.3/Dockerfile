@@ -33,7 +33,6 @@ RUN set -eux; \
     cd /etc/yum.repos.d; \
     wget https://zeroc.com/download/Ice/3.5/el6/zeroc-ice-el6.repo; \
     yum install -y ice-php-devel; \
-    yum erase -y $PHP_DEPS; \
     yum clean all; \
     rm -rf /var/cache/yum
 
