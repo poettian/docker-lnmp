@@ -2,7 +2,8 @@ FROM centos:centos6.10
 
 MAINTAINER Poettian <poettian@gmail.com>
 
-RUN yum install -y php-cli \
+RUN yum install -y epel-release \
+    php-cli \
     php-fpm \
     php-bcmath \
     php-xml \
