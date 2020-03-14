@@ -84,6 +84,10 @@ RUN set -eux; \
         echo 'listen = 9000'; \
     } | tee php-fpm.d/zz-docker.conf
 
+RUN set -eux; \
+    mkdir -p /data/logs/business/web; \
+    chown -R apache:apache /data/logs/business/web
+
 ENTRYPOINT ["docker-php-entrypoint"]
 
 EXPOSE 9000
