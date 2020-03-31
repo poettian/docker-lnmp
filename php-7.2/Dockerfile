@@ -119,10 +119,11 @@ RUN set -ex; \
 
 COPY docker-php-entrypoint /usr/local/bin/
 
+RUN chmod u+x /usr/local/bin/docker-php-entrypoint
+
 #RUN set -eux; \
 #    [ ! -d /run/php-fpm ]; \
 #    mkdir /run/php-fpm; \
-#    chmod u+x /usr/local/bin/docker-php-entrypoint; \
 #    cd /etc/; \
 #    sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' php-fpm.conf; \
 #    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' php-fpm.d/www.conf; \
