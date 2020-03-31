@@ -61,9 +61,6 @@ RUN dnf install -y gcc \
     gcc-c++ \
     make \
     cyrus-sasl-devel \
-    php-pear \
-    php-devel && \
-    pecl channel-update pecl.php.net && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
@@ -76,6 +73,7 @@ ENV ICE_DEPS bzip2-devel \
     lmdb-devel \
     mcpp-devel \
     openssl-devel \
+    php-pear \
     php-devel
 
 RUN set -ex; \
@@ -108,6 +106,7 @@ RUN set -ex; \
 
 
 RUN set -ex; \
+    pecl channel-update pecl.php.net && \
     cd ~ && \ 
     wget https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz && \
     tar -zxf v1.3.0.tar.gz && \
