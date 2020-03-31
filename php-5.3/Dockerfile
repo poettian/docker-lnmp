@@ -93,7 +93,7 @@ RUN set -ex; \
 
 COPY docker-php-entrypoint /usr/local/bin/
 
-COPY ./zz-docker.conf /etc/php-fpm.d/
+COPY ./xpoet.conf /etc/php-fpm.d/
 
 RUN chmod u+x /usr/local/bin/docker-php-entrypoint
 
