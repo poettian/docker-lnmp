@@ -60,7 +60,7 @@ RUN curl -s http://getcomposer.org/installer | php && \
 RUN dnf install -y gcc \
     gcc-c++ \
     make \
-    cyrus-sasl-devel \
+    cyrus-sasl-devel && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
