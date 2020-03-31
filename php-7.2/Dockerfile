@@ -6,7 +6,9 @@ USER root
 
 RUN dnf install -y dnf-utils \
     wget \
-    unzip
+    unzip && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 #####################################
 # basic php-cli php-fpm and extensions
@@ -58,7 +60,12 @@ RUN curl -s http://getcomposer.org/installer | php && \
 RUN dnf install -y gcc \
     gcc-c++ \
     make \
-    cyrus-sasl-devel
+    cyrus-sasl-devel \
+    php-pear \
+    php-devel && \
+    pecl channel-update pecl.php.net && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 #####################################
 # php ice extension
@@ -99,10 +106,6 @@ RUN set -ex; \
 # php rdkafka extension
 #####################################
 
-RUN set -ex; \
-    dnf install -y php-pear \
-    php-devel && \
-    pecl channel-update pecl.php.net
 
 RUN set -ex; \
     cd ~ && \ 
@@ -113,7 +116,9 @@ RUN set -ex; \
     make && \
     make install && \
     pecl install rdkafka-4.0.3 && \
-    echo "extension=rdkafka.so" > /etc/php.d/50-rdkafka.ini
+    echo "extension=rdkafka.so" > /etc/php.d/50-rdkafka.ini && \
+    rm -rf ~/librdkafka-1.3.0 \
+    ~/v1.3.0.tar.gz
 
 #####################################
 # prepare for working
