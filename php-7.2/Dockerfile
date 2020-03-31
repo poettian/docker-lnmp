@@ -135,22 +135,13 @@ RUN set -ex; \
 
 COPY docker-php-entrypoint /usr/local/bin/
 
+COPY ./xpoet.conf /etc/php-fpm.d/
+
 RUN chmod u+x /usr/local/bin/docker-php-entrypoint
 
-#RUN set -eux; \
-#    [ ! -d /run/php-fpm ]; \
-#    mkdir /run/php-fpm; \
-#    cd /etc/; \
-#    sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' php-fpm.conf; \
-#    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' php-fpm.d/www.conf; \
-#    { \
-#        echo '[global]'; \
-#        echo 'daemonize = no'; \
-#        echo; \
-#        echo '[www]'; \
-#        echo 'listen = 9000'; \
-#    } | tee php-fpm.d/zz-docker.conf
-
+RUN set -ex; \
+    mkdir /run/php-fpm && \
+    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' /etc/php-fpm.d/www.conf; \
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
