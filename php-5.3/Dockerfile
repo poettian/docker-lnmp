@@ -53,9 +53,9 @@ RUN yum install -y wget \
 
 RUN set -ex; \
     pecl channel-update pecl.php.net && \
-    printf "\n" | pecl install redis-4.3.0 && \
+    pecl install redis-4.3.0 && \
     echo "extension=redis.so" > /etc/php.d/redis.ini && \
-    printf "\n" | pecl install mongo-1.6.16 && \
+    pecl install mongo-1.6.16 && \
     echo "extension=mongo.so" > /etc/php.d/mogno.ini
 
 #####################################
@@ -87,13 +87,15 @@ RUN set -ex; \
 # prepare for working
 #####################################
 
-COPY docker-php-entrypoint /usr/local/bin/
-
 RUN set -ex; \
     mkdir -p /data/logs/business/web && \
-    chown -R apache:apache /data/logs/business/web && \
-    chmod u+x /usr/local/bin/docker-php-entrypoint && \
-    sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' /etc/php-fpm.d/www.conf
+    chown -R apache:apache /data/logs/business/web
+
+COPY docker-php-entrypoint /usr/local/bin/
+
+COPY ./zz-docker.conf /etc/php-fpm.d/
+
+RUN chmod u+x /usr/local/bin/docker-php-entrypoint
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
