@@ -100,7 +100,8 @@ RUN set -ex; \
 #####################################
 
 RUN set -ex; \
-    dnf install -y php-pear && \
+    dnf install -y php-pear \
+    php-devel && \
     pecl channel-update pecl.php.net
 
 RUN set -ex; \
