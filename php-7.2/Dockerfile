@@ -57,6 +57,7 @@ RUN curl -s http://getcomposer.org/installer | php && \
 
 RUN dnf install -y gcc \
     gcc-c++ \
+    make \
     cyrus-sasl-devel
 
 #####################################
