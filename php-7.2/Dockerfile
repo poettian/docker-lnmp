@@ -57,14 +57,13 @@ RUN curl -s http://getcomposer.org/installer | php && \
 # compile tools
 #####################################
 
-RUN dnf install -y gcc \
+RUN set -ex; \
+    dnf install -y gcc \
     gcc-c++ \
     make \
     cyrus-sasl-devel && \
-    dnf clean all && \
-    rm -rf /var/cache/dnf
-
-RUN dnf install -y php-pear \
+    dnf config-manager --set-enabled PowerTools && \
+    dnf install -y php-pear \
     php-devel && \
     pecl channel-update pecl.php.net && \
     dnf clean all && \
@@ -82,7 +81,6 @@ ENV ICE_DEPS bzip2-devel \
 
 RUN set -ex; \
     dnf install -y https://zeroc.com/download/ice/3.7/el8/ice-repo-3.7.el8.noarch.rpm && \
-    dnf config-manager --set-enabled PowerTools && \
     dnf install -y $ICE_DEPS && \
     cd /usr/local/src && \
     wget https://github.com/zeroc-ice/ice/archive/v3.7.3.zip && \
