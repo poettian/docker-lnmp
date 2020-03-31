@@ -60,7 +60,10 @@ RUN curl -s http://getcomposer.org/installer | php && \
 RUN dnf install -y gcc \
     gcc-c++ \
     make \
-    cyrus-sasl-devel && \
+    cyrus-sasl-devel \
+    php-pear \
+    php-devel && \
+    pecl channel-update pecl.php.net && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
@@ -72,9 +75,7 @@ ENV ICE_DEPS bzip2-devel \
     expat-devel \
     lmdb-devel \
     mcpp-devel \
-    openssl-devel \
-    php-pear \
-    php-devel
+    openssl-devel
 
 RUN set -ex; \
     dnf install -y https://zeroc.com/download/ice/3.7/el8/ice-repo-3.7.el8.noarch.rpm && \
@@ -104,9 +105,7 @@ RUN set -ex; \
 # php rdkafka extension
 #####################################
 
-
 RUN set -ex; \
-    pecl channel-update pecl.php.net && \
     cd ~ && \ 
     wget https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz && \
     tar -zxf v1.3.0.tar.gz && \
