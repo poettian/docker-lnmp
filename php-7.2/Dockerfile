@@ -62,7 +62,12 @@ RUN set -ex; \
     gcc-c++ \
     make \
     cyrus-sasl-devel && \
-    dnf config-manager --set-enabled PowerTools && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
+
+RUN dnf config-manager --set-enabled PowerTools
+
+RUN set -ex; \
     dnf install -y php-pear \
     php-devel && \
     pecl channel-update pecl.php.net && \
