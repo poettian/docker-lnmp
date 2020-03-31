@@ -60,8 +60,11 @@ RUN curl -s http://getcomposer.org/installer | php && \
 RUN dnf install -y gcc \
     gcc-c++ \
     make \
-    cyrus-sasl-devel \
-    php-pear \
+    cyrus-sasl-devel && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
+
+RUN dnf install -y php-pear \
     php-devel && \
     pecl channel-update pecl.php.net && \
     dnf clean all && \
