@@ -100,6 +100,10 @@ RUN set -ex; \
 #####################################
 
 RUN set -ex; \
+    dnf install -y php-pear && \
+    pecl channel-update pecl.php.net
+
+RUN set -ex; \
     cd ~ && \ 
     wget https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz && \
     tar -zxf v1.3.0.tar.gz && \
@@ -107,7 +111,7 @@ RUN set -ex; \
     ./configure --install-deps && \
     make && \
     make install && \
-    printf "\n" | pecl install rdkafka-4.0.3 && \
+    pecl install rdkafka-4.0.3 && \
     echo "extension=rdkafka.so" > /etc/php.d/50-rdkafka.ini
 
 #####################################
