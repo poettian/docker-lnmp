@@ -141,6 +141,7 @@ RUN chmod u+x /usr/local/bin/docker-php-entrypoint
 
 RUN set -ex; \
     mkdir /run/php-fpm && \
+    sed -i 's/include=.*\.conf//;$a include=/etc/php-fpm.d/*.conf' /etc/php-fpm.conf && \
     sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' /etc/php-fpm.d/www.conf
 
 ENTRYPOINT ["docker-php-entrypoint"]
