@@ -97,6 +97,8 @@ COPY ./xpoet.conf /etc/php-fpm.d/
 
 RUN chmod u+x /usr/local/bin/docker-php-entrypoint
 
+RUN sed -i 's/listen\.allowed_clients/;listen\.allowed_clients/' /etc/php-fpm.d/www.conf
+
 ENTRYPOINT ["docker-php-entrypoint"]
 
 EXPOSE 9000
