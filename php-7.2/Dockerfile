@@ -80,14 +80,14 @@ RUN set -ex; \
 
 RUN set -ex; \
     cd ~ && \ 
-    wget https://github.com/edenhill/librdkafka/archive/v1.3.0.tar.gz && \
-    tar -zxf v1.3.0.tar.gz && \
-    cd librdkafka-1.3.0 && \
+    wget https://github.com/edenhill/librdkafka/archive/v1.4.0.tar.gz && \
+    tar -zxf v1.4.0.tar.gz && \
+    cd librdkafka-1.4.0 && \
     ./configure --install-deps && \
     make && \
     make install && \
-    rm -rf ~/librdkafka-1.3.0 \
-    ~/v1.3.0.tar.gz
+    rm -rf ~/librdkafka-1.4.0 \
+    ~/v1.4.0.tar.gz
 
 RUN pecl install rdkafka-4.0.3 && \
     echo "extension=rdkafka.so" > /etc/php.d/50-rdkafka.ini

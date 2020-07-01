@@ -74,13 +74,18 @@ RUN set -ex; \
 #####################################
 
 RUN set -ex; \
-    wget https://github.com/edenhill/librdkafka/archive/v0.11.6.tar.gz && \
-    tar -zxf v0.11.6.tar.gz && \
-    cd librdkafka-0.11.6 && \
+    cd ~ && \ 
+    wget https://github.com/edenhill/librdkafka/archive/v1.4.0.tar.gz && \
+    tar -zxf v1.4.0.tar.gz && \
+    cd librdkafka-1.4.0 && \
     ./configure && \
     make && \
     make install && \
-    printf "\n" | pecl install rdkafka-3.0.5 && \
+    rm -rf ~/librdkafka-1.4.0 \
+    ~/v1.4.0.tar.gz
+
+
+RUN pecl install rdkafka-3.0.5 && \
     echo "extension=rdkafka.so" > /etc/php.d/rdkafka.ini
 
 #####################################
